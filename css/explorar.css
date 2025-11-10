@@ -1,0 +1,23 @@
+.explore-page{padding:40px 0}
+.explore-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px}
+.search-form{display:flex;max-width:480px}
+.search-input{flex:1;border-top-right-radius:0;border-bottom-right-radius:0}
+.search-btn{border-top-left-radius:0;border-bottom-left-radius:0}
+.filter-options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.filter-btn{background:#fff;border:1px solid #ced4da;padding:8px 12px;border-radius:999px;cursor:pointer;transition:var(--transition);text-decoration:none;display:inline-block}
+.filter-btn:hover{background:var(--light-color);border-color:var(--primary-color)}
+.filter-btn.active{background:var(--primary-color);color:#fff;border-color:var(--primary-color)}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.project-card{background:#fff;border-radius:8px;overflow:hidden;box-shadow:var(--box-shadow);transition:var(--transition)}
+.project-card:hover{transform:translateY(-4px);box-shadow:0 6px 12px rgba(0,0,0,0.12)}
+.project-card .project-image{height:200px;background-size:cover;background-position:center;border-radius:8px 8px 0 0;width:100%}
+.project-card .project-content{padding:16px}
+.project-card .project-title{font-size:1.2rem;margin-bottom:8px;color:var(--dark-color)}
+.project-card .project-meta{display:flex;justify-content:space-between;font-size:0.9rem;color:var(--gray-color);margin-bottom:12px}
+.project-card .project-stats{display:flex;justify-content:space-between;margin-top:8px;font-size:0.9rem}
+.project-card .project-goal{font-weight:600;color:var(--dark-color)}
+.project-card .progress-bar{height:8px;background:#e9ecef;border-radius:6px;overflow:hidden;margin:12px 0}
+.project-card .progress{height:100%;background:var(--success-color);transition:width 0.3s ease}
+.load-more-container{text-align:center;margin-top:20px}
+.no-projects-message{grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-color)}
+.text-muted{color:var(--gray-color)}

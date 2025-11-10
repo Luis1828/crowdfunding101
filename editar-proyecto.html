@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Editar Proyecto — CrowdFunding101</title>
+  <script>
+    // Redirect to crear-proyecto.html with id parameter
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    window.location.href = 'crear-proyecto.html' + (id ? '?id=' + id : '');
+  </script>
+</head>
+<body>
+  <p>Redirigiendo...</p>
+</body>
+</html>
+
