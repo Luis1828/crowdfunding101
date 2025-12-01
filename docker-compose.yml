@@ -1,0 +1,76 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: crowdfunding_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: crowdfunding_db
+    ports:
+      - "3307:3306"  # Puerto externo 3307 para evitar conflicto con MySQL local
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - ./db/payment-gateway-init.sql:/docker-entrypoint-initdb.d/99-payment-gateway-init.sql
+    healthcheck:
+      test: ["CMD", "mariadb", "-u", "root", "-prootpassword", "-e", "SELECT 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    networks:
+      - crowdfunding-network
+
+  app:
+    build: .
+    container_name: crowdfunding_app
+    environment:
+      DB_HOST: mariadb
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: crowdfunding_db
+      PORT: 3000
+      JWT_SECRET: tu_secreto_super_seguro_cambiar_en_produccion
+      NODE_ENV: production
+      PAYMENT_GATEWAY_URL: http://payment-gateway:3000
+      CONFIRMATION_HOOK_ENDPOINT: http://app:3000/api/payments/confirm
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./src:/app
+      - /app/node_modules
+    depends_on:
+      mariadb:
+        condition: service_started
+      payment-gateway:
+        condition: service_started
+    networks:
+      - crowdfunding-network
+
+  payment-gateway:
+    build:
+      context: ../../payment-gateway-main/Gateway
+      dockerfile: Dockerfile
+    container_name: payment_gateway
+    environment:
+      PORT: 3000
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: crowdfunding_db
+      PUBLIC_URL: http://localhost:3002/
+      CONFIRMATION_HOOK_ENDPOINT: http://app:3000/api/payments/confirm
+    ports:
+      - "3002:3000"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - crowdfunding-network
+
+networks:
+  crowdfunding-network:
+    driver: bridge
+

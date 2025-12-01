@@ -1,0 +1,272 @@
+<!doctype html>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <meta name="description" content="Ver Recaudaciones - CrowdFunding101" />
+
+    <title>Ver Recaudaciones — CrowdFunding101</title>
+
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.4.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <link rel="stylesheet" href="css/auth.css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="container header-container">
+        <a href="index.html" class="logo" aria-label="Ir al inicio"
+          >CrowdFunding<span>101</span></a
+        >
+
+        <button
+          class="mobile-menu-btn"
+          id="mobileMenuBtn"
+          aria-controls="navMenu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+
+        <ul class="nav-menu" id="navMenu" role="navigation">
+          <!-- Navigation will be populated by auth-system.js -->
+        </ul>
+      </div>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <section class="section">
+        <div class="container">
+          <h1>Recaudaciones del Proyecto</h1>
+
+          <div id="projectInfo" style="margin-bottom: 24px"></div>
+
+          <div
+            id="donationsSummary"
+            style="
+              background: #f8f9fa;
+              padding: 20px;
+              border-radius: 8px;
+              margin-bottom: 24px;
+            "
+          >
+            <h2>
+              Total Recaudado:
+              <span id="totalRaised" style="color: var(--primary-color)"
+                >Bs. 0.00</span
+              >
+            </h2>
+
+            <p>Número de donaciones: <span id="donationsCount">0</span></p>
+          </div>
+
+          <div id="donationsList" class="donations-list">
+            <p>Cargando recaudaciones...</p>
+          </div>
+
+          <div style="margin-top: 24px">
+            <a href="mis-proyectos.html" class="btn btn-outline"
+              >Volver a Mis Proyectos</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>CrowdFunding101</h3>
+
+            <p>
+              Conectamos ideas innovadoras con una comunidad global de
+              patrocinadores.
+            </p>
+          </div>
+        </div>
+
+        <div class="copyright">
+          <p>
+            &copy; <span id="year"></span> CrowdFunding101. Todos los derechos
+            reservados.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+
+    <script src="js/api.js"></script>
+
+    <script src="js/auth-system.js"></script>
+
+    <script>
+      async function loadDonations() {
+        const params = new URLSearchParams(window.location.search);
+
+        const projectId = params.get("id");
+
+        if (!projectId) {
+          document.getElementById("donationsList").innerHTML =
+            '<div class="error-message"><p>ID de proyecto no proporcionado.</p><a href="mis-proyectos.html" class="btn btn-primary">Volver</a></div>';
+
+          return;
+        }
+
+        try {
+          // Cargar información del proyecto
+
+          const project = await window.API.projects.get(projectId);
+
+          const user = AuthSystem.getCurrentUser();
+
+          // Verificar que el usuario es el dueño del proyecto
+
+          if (
+            !user ||
+            (project.creador_id !== user.id && !AuthSystem.isAdmin())
+          ) {
+            document.getElementById("donationsList").innerHTML =
+              '<div class="error-message"><p>No tienes permisos para ver las recaudaciones de este proyecto.</p><a href="mis-proyectos.html" class="btn btn-primary">Volver</a></div>';
+
+            return;
+          }
+
+          document.getElementById("projectInfo").innerHTML = `
+
+          <div style="background:white;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+
+            <h2>${project.titulo}</h2>
+
+            <p>Meta: ${formatCurrency(parseFloat(project.meta))}</p>
+
+            <p>Progreso: ${project.porcentaje || 0}%</p>
+
+          </div>
+
+        `;
+
+          // Cargar donaciones
+
+          const donations = await window.API.donations.getByProject(projectId);
+
+          const total = donations.reduce(
+            (sum, d) => sum + parseFloat(d.monto),
+            0,
+          );
+
+          document.getElementById("totalRaised").textContent =
+            formatCurrency(total);
+
+          document.getElementById("donationsCount").textContent =
+            donations.length;
+
+          const list = document.getElementById("donationsList");
+
+          if (donations.length === 0) {
+            list.innerHTML =
+              '<div class="no-projects-message"><p>Este proyecto aún no ha recibido donaciones.</p></div>';
+
+            return;
+          }
+
+          list.innerHTML = `
+
+          <h3>Lista de Donaciones</h3>
+
+          <div style="background:white;border-radius:8px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+
+            <table style="width:100%;border-collapse:collapse;">
+
+              <thead>
+
+                <tr style="background:#f8f9fa;">
+
+                  <th style="padding:12px;text-align:left;border-bottom:2px solid #dee2e6;">Donador</th>
+
+                  <th style="padding:12px;text-align:left;border-bottom:2px solid #dee2e6;">Fecha</th>
+
+                  <th style="padding:12px;text-align:right;border-bottom:2px solid #dee2e6;">Monto</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                ${donations
+                  .map(
+                    (d) => `
+
+                  <tr style="border-bottom:1px solid #dee2e6;">
+
+                    <td style="padding:12px;">${d.nombre_mostrado || "Anónimo"}</td>
+
+                    <td style="padding:12px;">${formatDate(d.fecha)}</td>
+
+                    <td style="padding:12px;text-align:right;font-weight:bold;color:var(--primary-color);">${formatCurrency(parseFloat(d.monto))}</td>
+
+                  </tr>
+
+                `,
+                  )
+                  .join("")}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        `;
+        } catch (error) {
+          console.error("Error cargando recaudaciones:", error);
+
+          document.getElementById("donationsList").innerHTML = `
+
+          <div class="error-message">
+
+            <p>Error al cargar las recaudaciones: ${error.message || "Error desconocido"}</p>
+
+            <a href="mis-proyectos.html" class="btn btn-primary">Volver</a>
+
+          </div>
+
+        `;
+        }
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+
+        return date.toLocaleDateString("es-ES", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!AuthSystem.isUser() && !AuthSystem.isAdmin()) {
+          window.location.href =
+            "login.html?redirect=" + encodeURIComponent(window.location.href);
+
+          return;
+        }
+
+        loadDonations();
+      });
+    </script>
+  </body>
+</html>

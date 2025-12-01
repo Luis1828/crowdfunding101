@@ -1,220 +1,239 @@
-# CrowdFunding101 — Fase 3 (Contenido estático)
+# CrowdFunding101 - Plataforma de Financiación Colectiva
 
-Este es un demo estático de una plataforma de crowdfunding. Está organizado para ser fácil de editar y correr localmente.
+Plataforma web completa de crowdfunding desarrollada con HTML, CSS, JavaScript (frontend) y Node.js/Express (backend) con base de datos MariaDB.
 
-## 🚀 Características
+## Características
 
-### Autenticación y Usuarios
-- Sistema de roles: Visitante, Usuario, Administrador
-- Validación de formularios con mensajes inline
-- Simulación de login/logout en frontend usando localStorage
-- Protección de rutas según rol de usuario
+- Frontend con HTML, CSS y JavaScript vanilla (sin frameworks)
+- Backend REST API con Node.js/Express
+- Base de datos MariaDB con todas las tablas necesarias
+- Sistema de autenticación con JWT
+- Activación de cuentas por email
+- Gestión completa de proyectos con estados
+- Sistema de donaciones
+- Panel de administración
+- Docker y Docker Compose para fácil despliegue
 
-### Gestión de Proyectos
-- Estados de proyecto: Borrador, En Revisión, Observado, Rechazado, Publicado
-- Estados de campaña: No Iniciada, En Progreso, En Pausa, Finalizada
-- Sistema de categorías con iconos Flaticon
-- Badges de estado visibles en todas las vistas
-
-### Panel de Administrador
-- Página `admin.html` con interfaz de administración
-- Listado completo de proyectos con filtros por estado
-- Funcionalidad de aprobar/rechazar proyectos con observaciones
-- Gestión de usuarios administradores
-
-### Funcionalidades de Usuario
-- **Mis Proyectos** (`mis-proyectos.html`): Listado personal de proyectos
-- **Proyectos Favoritos** (`favoritos.html`): Proyectos guardados
-- **Mis Aportes** (`mis-aportes.html`): Historial de donaciones
-- **Crear/Editar Proyecto** (`crear-proyecto.html`): Formulario de creación y edición
-
-### Mejoras de Interfaz
-- Badges de estado con colores distintivos
-- Diseño responsive para móvil/tablet/desktop
-- Validación de formularios mejorada sin alerts
-- Iconos Flaticon para categorías
-
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 proyecto-crowdfunding/
-├── assets/
-│   └── images/
-│       ├── nuevos/          # 12 nuevas imágenes de proyectos
-│       └── ...              # Imágenes existentes
-├── css/
-│   ├── auth.css            # Estilos de autenticación
-│   ├── badges.css          # Estilos de badges y estados
-│   ├── detalle-proyecto.css
-│   ├── explorar.css
-│   ├── home.css
-│   ├── styles.css          # Estilos globales
-│   └── admin.css           # Estilos del panel admin
-├── js/
-│   ├── auth.js             # Validación de formularios
-│   ├── auth-system.js      # Sistema de autenticación
-│   ├── main.js             # Datos de muestra y utilidades
-│   ├── home.js             # Página principal
-│   ├── explorar.js         # Página de exploración
-│   ├── detalle-proyecto.js # Detalle de proyecto
-│   ├── admin.js            # Panel de administración
-│   ├── mis-proyectos.js    # Mis proyectos
-│   ├── favoritos.js        # Favoritos
-│   ├── mis-aportes.js      # Mis aportes
-│   └── crear-proyecto.js   # Crear/editar proyecto
-├── index.html              # Página principal
-├── explorar.html           # Explorar proyectos
-├── detalle-proyecto.html   # Detalle de proyecto
-├── login.html              # Iniciar sesión
-├── registro.html           # Registro
-├── admin.html              # Panel de administración
-├── mis-proyectos.html      # Mis proyectos
-├── favoritos.html          # Proyectos favoritos
-├── mis-aportes.html        # Mis aportes
-├── crear-proyecto.html     # Crear/editar proyecto
-├── editar-proyecto.html    # Redirige a crear-proyecto.html
-├── Dockerfile
-├── nginx.conf
-└── README.md
+├── src/                    # Código fuente completo
+│   ├── assets/            # Imágenes y recursos
+│   ├── css/               # Estilos CSS
+│   ├── js/                # JavaScript frontend
+│   ├── routes/            # Rutas del backend
+│   ├── config/            # Configuración
+│   ├── middleware/        # Middleware de autenticación
+│   ├── utils/             # Utilidades
+│   ├── scripts/           # Scripts de utilidad
+│   ├── *.html             # Páginas HTML
+│   ├── index.js           # Servidor Express
+│   └── package.json       # Dependencias Node.js
+├── db/                     # Scripts SQL
+│   └── script-de-inicializacion.sql
+├── uploads/                # Archivos subidos
+├── Dockerfile              # Imagen Docker
+├── docker-compose.yml      # Orquestación de contenedores
+└── script-de-inicializacion.sql  # Script SQL (copia)
 ```
 
-## 🎯 Cómo usar
+## Requisitos Previos
 
-### Opción 1: Abrir directamente en el navegador
-1. Descomprime el proyecto
-2. Abre `index.html` en tu navegador (doble clic)
-3. **Nota**: Algunas funcionalidades requieren un servidor local debido a CORS
+- Docker y Docker Compose instalados
+- Git (para clonar el repositorio)
 
-### Opción 2: Servidor local (Recomendado)
+## Instalación y Ejecución
 
-#### Con Python:
-```bash
-# Python 3
-python -m http.server 8000
+### Opción 1: Docker Compose (Recomendado)
 
-# Python 2
-python -m SimpleHTTPServer 8000
-```
-
-#### Con Node.js (http-server):
-```bash
-npm install -g http-server
-http-server -p 8000
-```
-
-#### Con PHP:
-```bash
-php -S localhost:8000
-```
-
-Luego abre `http://localhost:8000` en tu navegador.
-
-### Opción 3: Docker
+1. Clonar o descargar el proyecto
+2. En la raíz del proyecto, ejecutar:
 
 ```bash
-# Construir la imagen
-docker build -t crowdfund-static .
-
-# Ejecutar el contenedor
-docker run -p 8080:80 --rm crowdfund-static
+docker-compose up -d --build
 ```
 
-Luego abre `http://localhost:8080` en tu navegador.
+3. Esperar a que los contenedores estén saludables (la API aplica todas las migraciones y datos por sí sola)
+4. Abrir `http://localhost:3000`
 
-## 👤 Usuarios de Prueba
+### Opción 2: Desarrollo Local
 
-### Administrador
-- **Email**: `admin@crowdfunding101.com`
-- **Password**: `admin123`
+1. Instalar Node.js 18+ y MariaDB
+2. Crear base de datos y ejecutar `db/script-de-inicializacion.sql`
+3. Copiar `src/.env.example` a `src/.env` y configurar
+4. Instalar dependencias:
 
-### Usuarios Normales
-- **Email**: `maria@example.com` / **Password**: `user123`
-- **Email**: `carlos@example.com` / **Password**: `user123`
-- **Email**: `ana@example.com` / **Password**: `user123`
-- **Email**: `test@test.com` / **Password**: `test123`
+```bash
+cd src
+npm install
+```
 
-## 🎨 Características Técnicas
+5. Iniciar servidor:
 
-### Tecnologías Utilizadas
-- HTML5
-- CSS3 (Vanilla, sin frameworks)
-- JavaScript (Vanilla, sin frameworks)
-- Flaticon UIcons (iconos)
-- localStorage (simulación de persistencia)
+```bash
+npm start
+```
+
+## Usuarios de Prueba
+
+Las cuentas se precargan automáticamente al iniciar el backend.
+
+- Admin: `admin@crowdfunding101.com` / `Admin123!`
+- Usuaria: `maria@example.com` / `User123!`
+- Usuario: `carlos@example.com` / `User123!`
+- Usuaria: `ana@example.com` / `User123!`
+- Cuenta de prueba sin activar: `test@test.com` / `Test123!`
+
+## API Endpoints
+
+### Autenticación
+- `POST /api/auth/register` - Registro de usuario
+- `POST /api/auth/login` - Inicio de sesión
+- `GET /api/auth/activate/:token` - Activar cuenta
+- `GET /api/auth/me` - Usuario actual
+
+### Proyectos
+- `GET /api/projects` - Listar proyectos
+- `GET /api/projects/:id` - Detalle de proyecto
+- `POST /api/projects` - Crear proyecto (requiere auth)
+- `PUT /api/projects/:id` - Editar proyecto (requiere auth)
+- `DELETE /api/projects/:id` - Eliminar proyecto (requiere auth)
+- `POST /api/projects/:id/submit` - Enviar para revisión (requiere auth)
+- `GET /api/projects/user/my-projects` - Mis proyectos (requiere auth)
+
+### Donaciones
+- `POST /api/donations/projects/:id` - Hacer donación (requiere auth)
+- `GET /api/donations/projects/:id` - Listar donaciones
+- `GET /api/donations/user/my-contributions` - Mis aportes (requiere auth)
+
+### Favoritos
+- `POST /api/favorites/:projectId` - Agregar favorito (requiere auth)
+- `DELETE /api/favorites/:projectId` - Quitar favorito (requiere auth)
+- `GET /api/favorites/user/my-favorites` - Mis favoritos (requiere auth)
+
+### Campañas
+- `POST /api/campaigns/:id/start` - Iniciar campaña (requiere auth)
+- `POST /api/campaigns/:id/pause` - Pausar campaña (requiere auth)
+- `POST /api/campaigns/:id/resume` - Reanudar campaña (requiere auth)
+
+### Administración
+- `GET /api/admin/projects` - Todos los proyectos (requiere admin)
+- `POST /api/admin/projects/:id/approve` - Aprobar proyecto (requiere admin)
+- `POST /api/admin/projects/:id/observe` - Observar proyecto (requiere admin)
+- `POST /api/admin/projects/:id/reject` - Rechazar proyecto (requiere admin)
+- `GET /api/admin/users` - Listar usuarios (requiere admin)
+- `POST /api/admin/users` - Crear administrador (requiere admin)
+- `PUT /api/admin/users/:id` - Editar usuario (requiere admin)
+- `DELETE /api/admin/users/:id` - Eliminar usuario (requiere admin)
+
+### Categorías
+- `GET /api/categories` - Listar categorías
+- `GET /api/categories/:id` - Detalle de categoría
+
+## Base de Datos
+
+### Tablas Principales
+- `usuarios` - Usuarios del sistema
+- `proyectos` - Proyectos de crowdfunding
+- `categorias` - Categorías de proyectos
+- `donaciones` - Donaciones realizadas
+- `favoritos` - Proyectos favoritos de usuarios
+- `observaciones` - Observaciones de administradores
 
 ### Estados de Proyecto
-- **Borrador**: Proyecto en creación, no visible públicamente
-- **En Revisión**: Esperando aprobación del administrador
-- **Observado**: Necesita correcciones antes de publicar
-- **Rechazado**: No cumple con los lineamientos
-- **Publicado**: Visible para todos los usuarios
+- **Borrador**: Proyecto en creación
+- **En Revisión**: Esperando aprobación
+- **Observado**: Necesita correcciones
+- **Rechazado**: No cumple requisitos
+- **Publicado**: Aprobado y visible
 
 ### Estados de Campaña
-- **No Iniciada**: Aún no ha comenzado
-- **En Progreso**: Campaña activa
+- **No Iniciada**: Aún no comenzó
+- **En Progreso**: Activa y recibiendo donaciones
 - **En Pausa**: Temporalmente pausada
-- **Finalizada**: Campaña completada
+- **Finalizada**: Completada
 
-## 📝 Notas Importantes
+## Configuración
 
-- **Este es un proyecto estático**: No hay backend real, todo se simula con localStorage
-- **Los datos se pierden al limpiar el navegador**: localStorage se borra al limpiar datos del navegador
-- **No hay persistencia real**: Los cambios no se guardan permanentemente
-- **Solo validación del cliente**: No hay validación del servidor
-- **Sin frameworks**: Todo está construido con HTML, CSS y JavaScript vanilla
+### Variables de Entorno
 
-## 🔒 Restricciones
+Crear archivo `src/.env` (los valores por defecto funcionan con Docker):
 
-- ❌ NO se usan frameworks frontend (React, Vue, Angular)
-- ❌ NO se usa Bootstrap ni frameworks CSS
-- ❌ NO hay backend real (solo simulación estática)
-- ❌ NO se usa base de datos real
-- ✅ Validación solo con JavaScript personalizado
-- ✅ Diseño responsive con CSS Grid y Flexbox
-- ✅ Iconos de Flaticon UIcons
+```env
+DB_HOST=mariadb
+DB_USER=root
+DB_PASSWORD=rootpassword
+DB_NAME=crowdfunding_db
+DB_PORT=3306
+PORT=3000
+JWT_SECRET=tu_secreto_super_seguro
+NODE_ENV=production
+FRONTEND_URL=http://localhost:3000
+```
 
-## 🎯 Funcionalidades Implementadas
+### Email (verificación real)
 
-✅ Sistema de autenticación con roles  
-✅ Validación de formularios mejorada  
-✅ Estados de proyecto y campaña  
-✅ Panel de administración  
-✅ Mis Proyectos  
-✅ Proyectos Favoritos  
-✅ Mis Aportes  
-✅ Crear/Editar Proyectos  
-✅ Badges de estado  
-✅ Diseño responsive  
-✅ Sistema de donaciones  
-✅ Categorías clickeables  
-✅ Iconos Flaticon  
+Para que los correos de activación salgan desde Gmail debes definir:
 
-## 📱 Responsive Design
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=pruebachuflay@gmail.com
+SMTP_PASS=doyjdtinqynbqjvl
+```
 
-El diseño es totalmente responsive y se adapta a:
-- 📱 Móviles (< 768px)
-- 📱 Tablets (768px - 1024px)
-- 💻 Desktop (> 1024px)
+- Usa la contraseña de aplicación **sin espacios**.
+- Si prefieres otras credenciales, solo reemplázalas por tus valores.
+- Si no defines variables, la API usa automáticamente la cuenta anterior para no romper el flujo de verificación.
 
-## 🐛 Solución de Problemas
+## Solución de Problemas
 
-### Los cambios no se guardan
-- Los datos se guardan en localStorage del navegador
-- Asegúrate de no estar en modo incógnito
-- Limpia el localStorage si hay problemas: `localStorage.clear()`
+### Los contenedores no inician
+```bash
+docker-compose down
+docker-compose up -d --build
+```
 
-### Los iconos no se muestran
-- Verifica tu conexión a internet (los iconos se cargan desde CDN)
-- Verifica la consola del navegador para errores
+### Error de conexión a base de datos
+- Verificar que MariaDB esté corriendo
+- Verificar variables de entorno
+- Esperar a que el healthcheck pase
 
-### El menú móvil no funciona
-- Asegúrate de que `js/main.js` y `js/auth-system.js` estén cargados
-- Verifica que el ancho de la ventana sea menor a 768px
+### Limpiar todo y empezar de nuevo
+```bash
+docker-compose down -v
+docker-compose up -d --build
+```
 
-## 📄 Licencia
+## Notas Importantes
 
-Ver archivo `LICENSE.txt` para más información.
+- La API inicializa contraseñas, proyectos publicados y campañas automáticamente al arrancar.
+- En desarrollo, los emails de activación se muestran en consola.
+- Cambia `JWT_SECRET` y las credenciales SMTP para producción.
+- Los archivos subidos se guardan en `/uploads` (volumen mapeado).
 
-## 👨‍💻 Desarrollo
+## Funcionalidades Implementadas
 
-Este proyecto fue desarrollado como parte de la Fase 3 de un sistema de crowdfunding estático. Para funcionalidad completa se requiere implementar un backend real con base de datos.
+Sistema de autenticación con JWT  
+Activación de cuentas por email  
+CRUD completo de proyectos  
+Sistema de donaciones  
+Favoritos  
+Panel de administración  
+Gestión de campañas  
+Estados de proyecto y campaña  
+Validación de formularios  
+Diseño responsive  
+
+
+## Desarrollo
+
+Para desarrollo local con hot-reload:
+
+```bash
+cd src
+npm run dev
+```
+
+Requiere `nodemon` instalado globalmente o en devDependencies.

@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Mis Aportes — CrowdFunding101</title>
+
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.4.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <link rel="stylesheet" href="css/badges.css" />
+
+    <link rel="stylesheet" href="css/explorar.css" />
+
+    <link rel="stylesheet" href="css/admin.css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="container header-container">
+        <a href="index.html" class="logo">CrowdFunding<span>101</span></a>
+
+        <button
+          class="mobile-menu-btn"
+          id="mobileMenuBtn"
+          aria-controls="navMenu"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+
+        <ul class="nav-menu" id="navMenu" role="navigation"></ul>
+      </div>
+    </header>
+
+    <main class="explore-page">
+      <div class="container">
+        <h1 class="section-title">Mis Aportes</h1>
+
+        <div class="contributions-summary">
+          <div class="summary-card">
+            <h3>Total Aportado</h3>
+
+            <p class="summary-amount" id="totalContributed">Bs. 0.00</p>
+          </div>
+
+          <div class="summary-card">
+            <h3>Proyectos Apoyados</h3>
+
+            <p class="summary-count" id="projectsSupported">0</p>
+          </div>
+        </div>
+
+        <div id="contributionsList" class="contributions-list"></div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>CrowdFunding101</h3>
+
+            <p>
+              Conectamos ideas innovadoras con una comunidad global de
+              patrocinadores.
+            </p>
+          </div>
+
+          <div class="footer-column">
+            <h3>Enlaces</h3>
+
+            <ul class="footer-links">
+              <li><a href="index.html">Inicio</a></li>
+
+              <li><a href="explorar.html">Explorar Proyectos</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="copyright">
+          <p>
+            &copy; <span id="year"></span> CrowdFunding101. Todos los derechos
+            reservados.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+
+    <script src="js/api.js"></script>
+
+    <script src="js/auth-system.js"></script>
+
+    <script src="js/message-system.js"></script>
+
+    <script src="js/mis-aportes.js"></script>
+  </body>
+</html>

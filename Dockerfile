@@ -1,7 +1,21 @@
-FROM nginx:alpine
-# Copy static site
-COPY . /usr/share/nginx/html
-# Replace default nginx.conf with custom (optional)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"] 
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copiar package.json
+COPY src/package.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar código fuente
+COPY src/ ./
+
+# Crear directorio para uploads
+RUN mkdir -p uploads
+
+# Exponer puerto
+EXPOSE 3000
+
+# Comando de inicio
+CMD ["node", "index.js"]

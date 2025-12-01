@@ -1,0 +1,251 @@
+Requerimientos del Proyecto Final
+
+El proyecto de final consiste en desarrollar una aplicación web aplicando todos los conocimientos adquiridos a lo largo de la materia.
+
+Se debe tomar en cuenta que el proyecto final es Individual. Proyectos colectivos (más de 1 persona) no serán tomados en cuenta.
+
+El proyecto final tiene un valor de 40 puntos sobre la nota final de la materia.
+
+La aplicación que se pide desarrollar es una Plataforma de Crowdfunding o Financiación Colectiva similar a plataformas como Kickstarter, Indiegogo, GoFundMe, etc. Este tipo de plataformas permiten que usuarios puedan publicar proyectos como ideas de negocios, fines benéficos, u otras ideas, con el fin de ser financiados por la comunidad. Por lo que cualquier persona puede publicar sus proyectos y también puede financiar los proyectos publicados.
+
+1. Directrices Generales
+
+1. La aplicación contener lo siguiente:
+
+   a. Front-end construido con HTML, CSS y Javascript y aplicando Responsive Design, de manera que las interfaces puedan visualizarse en dispositivos móviles como ser teléfonos y tablets y en equipos de computación como ser laptops y desktops.
+
+   b. Back-end construido con cualquier lenguaje de programación y/o framework el cual exponga una REST API. Esta Web API debe conectarse a una base de datos con el objetivo de persistir los datos.
+
+2. La base de datos debe ser Relacional (SQL) y esta es de libre elección excepto SQLite y estar hosteada en el entorno propio (no en la nube o en algun servicio externo).
+
+3. No está permitido el uso de frameworks o librerías para el front-end como React, Vue.js, Angular, etc.
+
+4. El back-end debe ser desarrollado por el estudiante y ser accedido mediante llamadas asíncronas. La Rest API debe retornar resultados en formato JSON mediante una REST API. No esta permitido el uso de Backend as a Service.
+
+5. No está permitido el renderizado del lado del servidor, es decir que el servidor no debe ser quien genere el código HTML.
+
+6. Los formularios deben ser validados en el front-end usando Javascript de manera que los datos se encuentren correctos antes de ser enviados al back-end. Los mensajes de validación deberán aparecer debajo del campo que tenga error, de manera similar al siguiente ejemplo:
+
+[Imagen: media/image1.png]
+
+No están permitidas las validaciones de HTML. Ni tampoco los mensajes con Alert. En caso de que hubiera respuestas del backend que correspondan un error, de igual manera deberán ser mostradas en la interfaz gráfica, pero sin usar mensajes alert.
+
+7. No se permitirán plantillas bajadas de internet.
+
+8. No está permitido el uso de frameworks CSS como bootstrap, materialize, tailwind o similares.
+
+9. El estudiante debe tener un dominio completo de la solución presentada a la hora de la evaluación.
+
+10. No puede haber proyectos iguales, en caso de encontrar proyectos iguales, ambos proyectos serán tomados como inválidos. Se tomará las mismas medidas si en el proyecto presentado se detecta plagio o que fue generado por Inteligencia Artificial.
+
+11. Entre los criterios de evaluación se tomará en cuenta:
+
+    a. Que cumpla con las directrices descritas anteriormente.
+
+    b. Que cumpla con todos los requerimientos funcionales descritos más adelante.
+
+    c. Estructuración del código y recursos (imágenes, javascript, etc).
+
+    d. Orden del código.
+
+    e. Diseño uniforme del sitio.
+
+    f. Interfaces usables e intuitivas.
+
+    g. Defensa de la solución
+
+2. Requerimientos funcionales
+
+La aplicación solicitada consiste en una aplicación web que permite a los visitantes visualizar los proyectos de recaudación publicados en el sitio. Así también, un visitante puede registrarse como usuario y publicar sus propios proyectos o financiar cualquier proyecto publicado en la plataforma.
+
+Se maneja los siguientes actores que interactúan con la Plataforma:
+
+[Imagen: media/image2.png]
+
+- Visitante: Usuario que no se ha autenticado en la plataforma. Este usuario solamente puede explorar los proyectos que se encuentran publicados y que han sido aprobados.
+
+- Usuario Autenticado: Usuario que se registró en la plataforma y validó su cuenta de usuario mediante su correo electrónico, por lo cual puede autenticarse en la plataforma para crear proyectos propios, hacer seguimiento a proyectos de interés y financiar proyectos de otros usuarios.
+
+- Administrador: Usuario registrado por otro administrador que tiene permisos administrar aspectos internos de la plataforma, así como también permisos para aprobar o rechazar proyectos.
+
+Los proyectos deben tener una meta de financiación, la cual es un monto objetivo que se busca recaudar con la campaña de recaudación, la cual también debe tener una fecha límite.
+
+La plataforma debe permitir que cualquier persona puede explorar libremente los proyectos aprobados, pero es necesario tener una cuenta de usuario registrado y pasar por un proceso de validación para poder contribuir a un proyecto o publicar uno.
+
+Los proyectos publicados deben pertenecer a una categoría específica y dependiendo de la categoría del proyecto, este tendrá uno o más requisitos a presentar para publicar un proyecto. Estos requisitos pueden ser datos requeridos o documentos que deben adjuntar. Esto puede variar de una categoría a otra, por lo que cada categoría debe tener su configuración, con la posibilidad de agregar más categorías y requisitos para las mismas.
+
+Los proyectos deben pasar por un proceso de Aprobación para que estos puedan ser visualizados en la Plataforma y puedan iniciar su Campaña de Recaudación. Esta aprobación es realizada por el Administrador. El flujo de estados en los que está un proyecto es el siguiente:
+
+[Imagen: media/image3.png]
+
+- Borrador: Es el estado inicial del proyecto, en este estado el usuario puede editar el proyecto y puede tener datos incompletos.
+
+- En Revisión: Este estado indica que el proyecto ha sido enviado para su Revisión por parte de los administradores de la plataforma. En este estado, el proyecto no puede ser editado, y será de solo lectura. Si los datos del proyecto
+
+- Observado: Este estado indica que existen observaciones que impiden que el proyecto sea publicado, para lo cual el usuario deberá modificar lo solicitado y volver a enviar el proyecto para su revisión.
+
+- Rechazado: Este estado indica que el proyecto no cumple con los requisitos solicitados ni tampoco con las directrices de la plataforma y no hay forma de que este proyecto sea aprobado (por ejemplo, se busca financiar alguna actividad ilícita).
+
+- Publicado: Este estado indica que el proyecto fue aprobado y puede empezar a iniciar su campaña de financiación.
+
+Solo los proyectos en estado Publicado pueden ser visibles dentro de la plataforma y pueden iniciar su Campaña de Recaudación.
+
+La Campaña de Recaudación de un Proyecto, es el periodo de tiempo en el cual puede recibir financiación por parte de los usuarios de la plataforma. Al iniciar la campaña se debe establecer una fecha límite en la cual esta estará vigente para recibir financiación. Cada campaña puede estar en los siguientes estados:
+
+[Imagen: media/image4.png]
+
+- No Iniciada: este es el estado inicial de la Campaña de Recaudación de un proyecto al momento de crearse, y no puede ser cambiado hasta que el proyecto se encuentre en estado Publicado.
+
+- En Progreso: este estado indica que el proyecto puede recibir financiación. Este estado no es automático, una vez el proyecto sea aprobado por el administrador y pase a estado Publicado, el usuario dueño del proyecto puede indicar la Campaña de Recaudación.
+
+- En Pausa: este estado indica que la Campaña de Recaudación ha iniciado, pero temporalmente que el proyecto no puede recibir financiación temporalmente por algún motivo.
+
+- Finalizada: este estado indica que la Campaña de Recaudación finalizó y no puede ser reanudada. La campaña finaliza cuando se llega a la fecha límite establecida para la campaña cuando esta inicia, o se llega al objetivo de financiación.
+
+En base al comportamiento anteriormente mencionado, se solicita que la plataforma contenga las siguientes funcionalidades:
+
+2.1. Vista Pública
+
+Esta corresponde a las interfaces y funcionalidades que son accesibles por cualquier visitante y usuario autenticado de la Plataforma.
+
+Se debe implementar las siguientes interfaces y funcionalidades:
+
+2.1.1. Página principal
+
+Esta página debe contener una presentación de la plataforma donde se muestra elementos como: información de la plataforma, categorías de proyectos, proyectos destacados, preguntas frecuentes, etc. La información para mostrar dependerá del enfoque que se elija dar a la plataforma.
+
+2.1.2. Exploración de Proyectos
+
+Esta funcionalidad permite al visitante y usuario autenticado, explorar los distintos proyectos aprobados que hayan sido publicados en la plataforma. Esta exploración debe realizarse mediante una búsqueda y/o exploración entre las distintas categorías de proyectos.
+
+Para cada proyecto del listado, debe visualizarse lo siguiente:
+
+- Título o nombre del proyecto
+
+- Imagen de portada
+
+- Monto de dinero de la meta de financiación.
+
+- Porcentaje del progreso de la meta de financiación.
+
+- Fecha límite en el que el proyecto estará abierto para recibir financiación.
+
+- Nombre del usuario que publicó el proyecto
+
+- Opción (enlace o botón) para navegar al detalle del proyecto.
+
+2.1.3. Visualización del detalle del Proyecto
+
+Esta funcionalidad permite ver el detalle de un proyecto cuando sea seleccionado desde el listado de proyecto o desde el listado de proyectos guardados. Esta vista debe mostrar los datos del proyecto, como ser:
+
+- Nombre del proyecto
+
+- Imagen de portada
+
+- Descripción detallada. Esta descripcion puede contener imagenes, videos y otro texto enriquecido. Es necesario que, para la edición, se tenga un editor de texto y no solamente un Textarea.
+
+- Meta de financiación
+
+- Porcentaje de progreso
+
+- Monto recaudado.
+
+- Datos del nombre del usuario que publicó el proyecto.
+
+- Top de los usuarios que más apoyaron al proyecto.
+
+- Opción para agregar a favoritos: Esta opción permite que el usuario que este autenticado, pueda guardar el proyecto para ser luego visualizado en su lista de proyectos guardados. En caso de que el usuario no se encuentre autenticado, al presionar este botón, se debe redirigir al formulario de autenticación.
+
+- Opción para Donar: Esta opción debe llevar a la ventana de recaudación donde el usuario puede hacer su aporte monetario al proyecto, para ello es necesario que el usuario se encuentre autenticado. Si el usuario no está autenticado, esta opción debe llevar al formulario de autenticación).
+
+Esta vista puede ser mostrada en una página individual.
+
+2.1.4. Registro de Usuarios de la Plataforma
+
+Esta opción permite al visitante registrarse como usuario de la plataforma, lo cual le otorgará la posibilidad acceder con sus credenciales para crear sus propios proyectos y que estos sean visualizados en la plataforma y también la posibilidad de contribuir a otros proyectos.
+
+Para ello debe haber una opción en el menú principal que muestre un formulario de registro que mínimamente solicite el nombre completo, correo electrónico (el cual será usado para identificar al usuario) y la contraseña (se puede pedir que se confirme la contraseña si se considera necesario). Los datos anteriormente solicitados deben ser obligatorios. El correo electrónico debe ser único, es decir que no pueden registrarse más de un usuario con el mismo correo electrónico. La contraseña debe contener al menos 6 caracteres.
+
+Al registrar el usuario, este no está inmediatamente activo, es decir, no puede iniciar sesión con sus datos registrados, por lo que luego de ser registrado en la base de datos, se le debe enviar a su correo un mensaje indicando que su registro fue exitoso junto con un enlace que, al acceder a él, recién se activará el usuario.
+
+2.1.5. Autenticación de Usuarios
+
+Esta opción permite visualizar un formulario de autenticación donde se solicitará al usuario registrado su correo electrónico y la contraseña con la que previamente se registró. Se debe verificar que los datos ingresados corresponden a un usuario registrado en la base de datos, de ser así, se le permitirá acceder a las opciones de la Vista de Usuarios Autenticados. Cabe destacar que solo podrán acceder aquellos usuarios que hayan activado su cuenta mediante el correo electrónico enviado.
+
+2.2. Vista de Usuarios Autenticados
+
+Esta corresponde a las interfaces y funcionalidades que son accesibles solamente a usuario registrados y que se encuentre autenticados en la Plataforma.
+
+Se debe implementar las siguientes interfaces y funcionalidades:
+
+2.2.1. Listado de Proyectos publicados
+
+Este listado muestra solamente los proyectos que el usuario autenticado ha registrado en la plataforma. Cada ítem de este listado debe presentar las siguientes opciones:
+
+- Editar
+
+- Eliminar
+
+- Ver Recaudaciones
+
+- Iniciar/Pausar/Reanudar campaña de recaudación (Cambiar estado de Campaña de Recaudación)
+
+- Datos del proyecto como ser el nombre, imagen, estado, etc.
+
+2.2.2. Formulario de Creación/Edición de Proyecto
+
+Este formulario debe permitir crear un nuevo proyecto o editar uno existente (si es que el estado de aprobación lo permite). En este formulario se debe llenar todos los datos requeridos en base a los requerimientos anteriormente mencionados, y se debe validar que se ingresen los datos correctamente.
+
+Si el proyecto es editable (basado en el estado de aprobación), debe haber un botón de guardado que guarde los cambios ingresados en el formulario, permitiendo guardar sin aplicar validaciones. Luego debe haber un botón de "Envío para Aprobación" que este deberá validar que todos los datos estén correctos antes de guardar los datos y cambiar el estado a "En Revisión".
+
+También se debe mostrar el historial de observaciones que Administrador deja cuando marca el Proyecto como "Observado".
+
+2.2.3. Cambiar estado de Campaña de Recaudación
+
+Cuando el proyecto sea aprobado por el Administrador, es decir, que se encuentre en estado "Publicado", a partir de ese momento se puede modificar el estado de la campaña. Esto debe hacerse en base a lo explicado en líneas anteriores. Pudiendo hacer lo siguiente:
+
+- Iniciar Campaña de Recaudación
+
+- Pausar Campaña de Recaudación
+
+- Reanudar Campaña de Recaudación
+
+Esto debe hacerse desde el Listado de Proyectos Publicados
+
+2.2.4. Ver recaudación de Proyecto
+
+Esta funcionalidad permite ver el listado de los diferentes aportes que han realizado los usuarios de la Plataforma. Este listado debe mostrar los nombres con sus respectivos montos.
+
+Aparte del listado, en la parte superior se debe mostrar el monto total recaudado.
+
+Esta funcionalidad debe ser accedida a través del Listado de Proyectos Publicados.
+
+2.2.5. Ver proyectos guardados
+
+Dado que el usuario autenticado puede agregar proyectos a su lista de proyectos guardados, esto con el propósito de tener una lista de proyectos a los que quiera dar seguimiento.
+
+Esta opción debe ser parte del menú principal.
+
+2.2.5. Ver mis aportes
+
+Esta opción debe ser parte del menú principal. Debe permitir ver un listado de los distintos aportes monetarios que el usuario ha realizado a los distintos proyectos indicando la fecha, el proyecto y el monto que se realizó.
+
+2.3. Vista de Administrador
+
+Esta vista corresponde al conjunto de interfaces y funcionalidades que solo los usuarios Administradores pueden realizar.
+
+2.3.1. Administrar Usuarios Administradores
+
+Esta funcionalidad permite la creación, edición y eliminación de Usuarios Administradores. Estos usuarios no necesitan activar su cuenta, por lo que no es necesario enviar un correo para ello.
+
+2.3.1. Administración de Proyectos
+
+Esta funcionalidad debe mostrar un listado de todos los proyectos registrados en la plataforma, con la posibilidad de filtrarlos por los siguientes Estado de Aprobación: En Revisión, Observado, Rechazado y Aprobado.
+
+Cada ítem del listado debe permitir ver todos los datos registrados por el usuario dueño del proyecto. En caso de que el Proyecto se encuentre en estado "En Revisión", el Administrador podrá hacer lo siguiente:
+
+- Aprobarlo para que pase a estado Publicado.
+
+- Observarlo para que pase a estado Observado, para ello debe indicar un texto donde se debe detallar las observaciones y cosas que se deben subsanar
+
+- Rechazarlo para que pase a estado Rechazado. Igualmente se debe indicar un texto de observación.

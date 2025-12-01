@@ -1,0 +1,118 @@
+Cómo implementar verificación de email (flujo completo y simple)
+
+1. Registro inicial (usuario aún NO validado)
+1. Usuario llena formulario (nombre, email, contraseña).
+2. Tu backend:
+Genera un token único (JWT o un UUID aleatorio).
+
+Guarda usuario en BD con campo verified = false y el token.
+
+Envía un email al usuario con un link de verificación que contiene el token.
+---
+2. Enviar email gratis
+
+Para enviar emails gratis usa:
+
+Opción recomendada (100% gratis): Gmail + Nodemailer
+
+Solo necesitas una cuenta de Gmail y generar una contraseña de aplicación.
+---
+
+3. Enlace de verificación
+
+Ejemplo de enlace:
+
+https://tu-dominio.com/api/verify?token=abc123
+
+Cuando el usuario hace clic:
+1. Tu backend revisa si ese token existe.
+2. Si existe:
+
+Marca al usuario como verified = true
+
+Borra o invalida ese token.
+3. Redirige a una página tipo:
+"Correo verificado correctamente".
+---
+Código completo ejemplo (Node.js + Express + Nodemailer)
+
+Instala dependencias
+
+npm install express nodemailer jsonwebtoken bcryptjs cors
+
+Servidor básico
+
+const express = require("express");
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+const app = express();
+app.use(express.json());
+
+/* Simulación de BD */
+const users = []; // En producción usas MySQL/Mongo
+
+// Transporter con Gmail (gratis)
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "tuCorreo@gmail.com",
+        pass: "tu_contraseña_de_aplicacion"
+    }
+});
+
+// Registro: crea usuario y envía email
+app.post("/register", async (req, res) => {
+    const { email, password } = req.body;
+
+    // Token para verificar
+    const token = jwt.sign({ email }, "SECRETITO", { expiresIn: "1d" });
+
+    users.push({ email, password, verified: false, token });
+
+    const url = `http://localhost:3000/verify/${token}`;
+
+    // Enviar email
+    await transporter.sendMail({
+        from: "Verificación <tuCorreo@gmail.com>",
+        to: email,
+        subject: "Verifica tu cuenta",
+        html: `<h3>Verifica tu email</h3>
+               <p>Haz clic en el siguiente enlace:</p>
+               <a href="${url}">Verificar Cuenta</a>`
+    });
+
+    res.json({ message: "Revisa tu correo para verificar tu cuenta." });
+});
+
+//Verificación
+app.get("/verify/:token", (req, res) => {
+    const token = req.params.token;
+
+    try {
+        const decoded = jwt.verify(token, "SECRETITO");
+        const user = users.find(u => u.email === decoded.email);
+
+        if (!user) return res.status(404).send("Token inválido");
+        if (user.verified) return res.send("Ya está verificado");
+
+        user.verified = true;
+        user.token = null;
+
+        res.send("Cuenta verificada correctamente");
+    } catch (err) {
+        res.status(400).send("Token expirado o inválido");
+    }
+});
+
+app.listen(3000, () => console.log("Servidor en http://localhost:3000"));
+
+
+---
+
+Qué debes agregar en tu proyecto real
+
+Base de datos	Crear tabla con email, password, verified, token
+Frontend	Un simple formulario de registro
+Email	Usar Gmail + contraseña de aplicación
+Seguridad	Hashear contraseñas con bcrypt
+Hosting gratuito	Render, Vercel, Railway
