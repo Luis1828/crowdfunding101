@@ -71,16 +71,31 @@ router.post("/projects/:id/approve", async (req, res) => {
       return res.status(404).json({ error: "Proyecto no encontrado" });
     }
 
-    if (projects[0].estado !== "En Revisión") {
+    const estadoActual = projects[0].estado;
+    console.log(`[Admin] Aprobando proyecto ${id}, estado actual: ${estadoActual}`);
+
+    // No permitir aprobar un proyecto que ya está publicado
+    if (estadoActual === "Publicado") {
+      console.log(`[Admin] Intento de aprobar proyecto ${id} que ya está publicado`);
       return res
         .status(400)
-        .json({ error: "Solo proyectos en revisión pueden ser aprobados" });
+        .json({ error: "Este proyecto ya está publicado" });
     }
 
-    await pool.execute(
+    const [updateResult] = await pool.execute(
       'UPDATE proyectos SET estado = "Publicado" WHERE id = ?',
       [id],
     );
+    console.log(`[Admin] Estado actualizado a "Publicado", filas afectadas: ${updateResult.affectedRows}`);
+
+    // Verificar que se actualizó correctamente
+    const [verify] = await pool.execute(
+      "SELECT estado FROM proyectos WHERE id = ?",
+      [id],
+    );
+    if (verify.length > 0) {
+      console.log(`[Admin] Estado verificado después de aprobar: ${verify[0].estado}`);
+    }
 
     res.json({ message: "Proyecto aprobado exitosamente" });
   } catch (error) {
@@ -110,25 +125,35 @@ router.post("/projects/:id/observe", async (req, res) => {
       return res.status(404).json({ error: "Proyecto no encontrado" });
     }
 
-    if (projects[0].estado !== "En Revisión") {
-      return res
-        .status(400)
-        .json({ error: "Solo proyectos en revisión pueden ser observados" });
+    const estadoActual = projects[0].estado;
+    console.log(`[Admin] Observando proyecto ${id}, estado actual: ${estadoActual}`);
+
+    // Permitir observar desde cualquier estado (excepto Borrador, pero esos no son visibles para admin)
+    // Siempre cambiar el estado a "Observado" si no lo está ya
+    if (estadoActual !== "Observado") {
+      const [updateResult] = await pool.execute(
+        'UPDATE proyectos SET estado = "Observado" WHERE id = ?',
+        [id],
+      );
+      console.log(`[Admin] Estado actualizado a "Observado", filas afectadas: ${updateResult.affectedRows}`);
+      
+      // Verificar que se actualizó correctamente
+      const [verify] = await pool.execute(
+        "SELECT estado FROM proyectos WHERE id = ?",
+        [id],
+      );
+      if (verify.length > 0) {
+        console.log(`[Admin] Estado verificado después de actualizar: ${verify[0].estado}`);
+      }
     }
 
-    // Cambiar estado a Observado
-    await pool.execute(
-      'UPDATE proyectos SET estado = "Observado" WHERE id = ?',
-      [id],
-    );
-
-    // Guardar observación
+    // Guardar observación (permitir múltiples observaciones)
     await pool.execute(
       "INSERT INTO observaciones (proyecto_id, administrador_id, texto, fecha) VALUES (?, ?, ?, NOW())",
       [id, req.user.id, observaciones],
     );
 
-    res.json({ message: "Proyecto observado exitosamente" });
+    res.json({ message: "Observación agregada exitosamente" });
   } catch (error) {
     console.error("Error observando proyecto:", error);
     res.status(500).json({ error: "Error al observar proyecto" });
@@ -156,17 +181,25 @@ router.post("/projects/:id/reject", async (req, res) => {
       return res.status(404).json({ error: "Proyecto no encontrado" });
     }
 
-    if (projects[0].estado !== "En Revisión") {
-      return res
-        .status(400)
-        .json({ error: "Solo proyectos en revisión pueden ser rechazados" });
-    }
+    const estadoActual = projects[0].estado;
+    console.log(`[Admin] Rechazando proyecto ${id}, estado actual: ${estadoActual}`);
 
+    // Permitir rechazar desde cualquier estado visible (excepto Borrador, pero esos no son visibles para admin)
     // Cambiar estado a Rechazado
-    await pool.execute(
+    const [updateResult] = await pool.execute(
       'UPDATE proyectos SET estado = "Rechazado" WHERE id = ?',
       [id],
     );
+    console.log(`[Admin] Estado actualizado a "Rechazado", filas afectadas: ${updateResult.affectedRows}`);
+
+    // Verificar que se actualizó correctamente
+    const [verify] = await pool.execute(
+      "SELECT estado FROM proyectos WHERE id = ?",
+      [id],
+    );
+    if (verify.length > 0) {
+      console.log(`[Admin] Estado verificado después de rechazar: ${verify[0].estado}`);
+    }
 
     // Guardar observación
     await pool.execute(

@@ -279,61 +279,115 @@ function setupReviewModal() {
   const cancelBtn = document.getElementById("cancelReview");
   const form = document.getElementById("reviewForm");
 
+  // Función para resetear el estado del modal
+  const resetModalState = () => {
+    const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Aplicar Cambio";
+    }
+    if (form) {
+      form.reset();
+    }
+    const observationsField = document.getElementById("reviewObservations");
+    if (observationsField) {
+      observationsField.removeAttribute("required");
+      observationsField.placeholder = "Ingrese observaciones (opcional)";
+      observationsField.style.borderColor = "";
+    }
+  };
+
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
+      resetModalState();
       modal.style.display = "none";
     });
   }
 
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
+      resetModalState();
       modal.style.display = "none";
     });
   }
 
   if (form) {
+    let isSubmitting = false; // Prevenir doble submit
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      
+      if (isSubmitting) {
+        console.log("Submit ya en proceso, ignorando...");
+        return;
+      }
+
       const projectId = parseInt(
         document.getElementById("reviewProjectId").value,
       );
       const action = document.getElementById("reviewAction").value;
       const observations = document.getElementById("reviewObservations").value;
 
+      console.log("Procesando acción:", { projectId, action, hasObservations: !!observations.trim() });
+
+      // Validar antes de deshabilitar el botón
+      if (!action || action === "") {
+        showError("Por favor selecciona una acción");
+        return;
+      }
+
+      // Validar observaciones antes de procesar
+      if ((action === "reject" || action === "observe") && !observations.trim()) {
+        const actionName = action === "reject" ? "rechazar" : "observar";
+        showError(`Las observaciones son requeridas al ${actionName} un proyecto`);
+        // Resaltar el campo
+        const obsField = document.getElementById("reviewObservations");
+        if (obsField) {
+          obsField.style.borderColor = "#dc3545";
+          obsField.focus();
+          setTimeout(() => {
+            obsField.style.borderColor = "";
+          }, 3000);
+        }
+        return;
+      }
+
+      isSubmitting = true;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : "Aplicar Cambio";
+      
       try {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Procesando...";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Procesando...";
+        }
 
         if (action === "approve") {
+          console.log("Aprobando proyecto:", projectId);
           await window.API.admin.approveProject(projectId);
         } else if (action === "reject") {
-          if (!observations.trim()) {
-            showError(
-              "Las observaciones son requeridas al rechazar un proyecto",
-            );
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-            return;
-          }
+          console.log("Rechazando proyecto:", projectId);
           await window.API.admin.rejectProject(projectId, observations);
         } else if (action === "observe") {
-          if (!observations.trim()) {
-            showError(
-              "Las observaciones son requeridas al observar un proyecto",
-            );
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-            return;
-          }
+          console.log("Observando proyecto:", projectId);
           await window.API.admin.observeProject(projectId, observations);
         } else if (action === "draft") {
+          console.log("Marcando como borrador:", projectId);
           await window.API.admin.setDraftProject(projectId);
+        } else {
+          throw new Error("Acción no reconocida: " + action);
         }
 
         showSuccess("Acción realizada exitosamente");
         await loadAdminProjects();
+        
+        // Resetear estado antes de cerrar
+        isSubmitting = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+        
         modal.style.display = "none";
         form.reset();
       } catch (error) {
@@ -342,13 +396,30 @@ function setupReviewModal() {
           "Error al procesar la acción: " +
             (error.message || "Error desconocido"),
         );
-        const submitBtn = form.querySelector('button[type="submit"]');
+        isSubmitting = false;
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Confirmar";
+          submitBtn.textContent = originalText;
         }
       }
     });
+
+    // Actualizar requerido del campo de observaciones según la acción seleccionada
+    const actionSelect = document.getElementById("reviewAction");
+    const observationsField = document.getElementById("reviewObservations");
+    
+    if (actionSelect && observationsField) {
+      actionSelect.addEventListener("change", () => {
+        const action = actionSelect.value;
+        if (action === "reject" || action === "observe") {
+          observationsField.setAttribute("required", "required");
+          observationsField.placeholder = "Las observaciones son requeridas";
+        } else {
+          observationsField.removeAttribute("required");
+          observationsField.placeholder = "Ingrese observaciones (opcional)";
+        }
+      });
+    }
   }
 }
 
@@ -356,33 +427,60 @@ async function openReviewModal(projectId) {
   const modal = document.getElementById("reviewModal");
   const projectIdInput = document.getElementById("reviewProjectId");
   const actionSelect = document.getElementById("reviewAction");
+  const form = document.getElementById("reviewForm");
 
-  if (!modal || !projectIdInput || !actionSelect) return;
+  if (!modal || !projectIdInput || !actionSelect) {
+    console.error("Elementos del modal no encontrados");
+    return;
+  }
+
+  // Resetear estado del modal antes de abrir
+  const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Aplicar Cambio";
+  }
+  if (form) {
+    form.reset();
+  }
 
   try {
     const project = await window.API.projects.get(projectId);
+    console.log("Proyecto cargado para modal:", project);
 
     projectIdInput.value = projectId;
-    document.getElementById("reviewObservations").value = "";
+    const observationsField = document.getElementById("reviewObservations");
+    if (observationsField) {
+      observationsField.value = "";
+      observationsField.removeAttribute("required");
+      observationsField.placeholder = "Ingrese observaciones (opcional)";
+      observationsField.style.borderColor = "";
+    }
 
+    // Limpiar y construir opciones dinámicamente
     actionSelect.innerHTML = '<option value="">Seleccionar acción</option>';
 
-    if (project.estado === "En Revisión") {
+    const estado = project.estado || "";
+    console.log("Estado del proyecto:", estado);
+
+    // No mostrar "Aprobar" si ya está publicado
+    if (estado !== "Publicado") {
       actionSelect.innerHTML +=
         '<option value="approve">Aprobar/Publicar</option>';
-      actionSelect.innerHTML += '<option value="reject">Rechazar</option>';
-      actionSelect.innerHTML += '<option value="observe">Observar</option>';
+      console.log("Opción 'Aprobar' agregada");
     } else {
-      actionSelect.innerHTML +=
-        '<option value="approve">Aprobar/Publicar</option>';
-      actionSelect.innerHTML += '<option value="reject">Rechazar</option>';
-      actionSelect.innerHTML += '<option value="observe">Observar</option>';
+      console.log("Proyecto ya publicado, no se muestra opción Aprobar");
     }
+
+    // Siempre permitir observar (múltiples veces) y rechazar
+    actionSelect.innerHTML += '<option value="observe">Observar</option>';
+    actionSelect.innerHTML += '<option value="reject">Rechazar</option>';
+    console.log("Opciones 'Observar' y 'Rechazar' agregadas");
 
     modal.style.display = "block";
   } catch (error) {
     console.error("Error cargando proyecto:", error);
-    showError("Error al cargar el proyecto");
+    showError("Error al cargar el proyecto: " + (error.message || "Error desconocido"));
   }
 }
 
@@ -418,3 +516,4 @@ async function toggleUserRole(userId) {
 if (typeof initAdminPage === "function") {
   document.addEventListener("DOMContentLoaded", initAdminPage);
 }
+
