@@ -1,6 +1,13 @@
 async function initMyContributionsPage() {
-  if (!AuthSystem.isUser() && !AuthSystem.isAdmin()) {
-    window.location.href = "login.html?redirect=mis-aportes.html";
+  // Solo usuarios normales pueden ver sus aportes
+  if (!AuthSystem.isUser()) {
+    if (!AuthSystem.isLoggedIn()) {
+      window.location.href = "login.html?redirect=mis-aportes.html";
+    } else if (AuthSystem.isAdmin()) {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "index.html";
+    }
     return;
   }
 

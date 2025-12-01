@@ -345,11 +345,23 @@ async function saveProject(status) {
 
       if (status === "En Revisión") {
         await window.API.projects.submit(editingProjectId);
+        showSuccess(
+          "Proyecto actualizado y enviado para revisión. Redirigiendo...",
+        );
+      } else {
+        showSuccess("Proyecto actualizado exitosamente. Redirigiendo...");
       }
-      showSuccess("Proyecto actualizado exitosamente. Redirigiendo...");
     } else {
-      await window.API.projects.create(projectData);
-      showSuccess("Proyecto creado exitosamente. Redirigiendo...");
+      const created = await window.API.projects.create(projectData);
+
+      if (status === "En Revisión" && created && created.id) {
+        await window.API.projects.submit(created.id);
+        showSuccess(
+          "Proyecto creado y enviado para revisión. Redirigiendo...",
+        );
+      } else {
+        showSuccess("Proyecto creado exitosamente como borrador. Redirigiendo...");
+      }
     }
 
     setTimeout(() => {

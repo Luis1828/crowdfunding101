@@ -95,7 +95,7 @@ function displayAdminProjects(projects) {
         <div class="status-display">
           <span class="status-label">Estado:</span>
           <span class="badge ${getStatusBadgeClass(project.estado)}">${project.estado}</span>
-          <span class="badge ${getCampaignBadgeClass(project.campaña_estado)} campaign-status-badge">${project.campaña_estado}</span>
+          <span class="badge ${getCampaignBadgeClass(project.campaña_estado)} campaign-status-badge">${formatCampaignStatus(project.campaña_estado)}</span>
         </div>
         <h3 class="project-title">${project.titulo}</h3>
         <div class="project-meta">
@@ -328,6 +328,8 @@ function setupReviewModal() {
             return;
           }
           await window.API.admin.observeProject(projectId, observations);
+        } else if (action === "draft") {
+          await window.API.admin.setDraftProject(projectId);
         }
 
         showSuccess("Acción realizada exitosamente");

@@ -290,6 +290,12 @@ const adminAPI = {
     });
   },
 
+  setDraftProject: async (projectId) => {
+    return apiRequest(`/admin/projects/${projectId}/draft`, {
+      method: "POST",
+    });
+  },
+
   observeProject: async (projectId, observaciones) => {
     return apiRequest(`/admin/projects/${projectId}/observe`, {
       method: "POST",

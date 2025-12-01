@@ -131,12 +131,8 @@
 
           const user = AuthSystem.getCurrentUser();
 
-          // Verificar que el usuario es el dueño del proyecto
-
-          if (
-            !user ||
-            (project.creador_id !== user.id && !AuthSystem.isAdmin())
-          ) {
+          // Verificar que el usuario es el dueño del proyecto (solo usuarios normales)
+          if (!user || project.creador_id !== user.id) {
             document.getElementById("donationsList").innerHTML =
               '<div class="error-message"><p>No tienes permisos para ver las recaudaciones de este proyecto.</p><a href="mis-proyectos.html" class="btn btn-primary">Volver</a></div>';
 
@@ -258,14 +254,19 @@
       }
 
       document.addEventListener("DOMContentLoaded", function () {
-        if (!AuthSystem.isUser() && !AuthSystem.isAdmin()) {
-          window.location.href =
-            "login.html?redirect=" + encodeURIComponent(window.location.href);
-
-          return;
+        // Solo usuarios normales pueden ver esta vista
+        if (!AuthSystem.isUser()) {
+          if (!AuthSystem.isLoggedIn()) {
+            window.location.href =
+              "login.html?redirect=" + encodeURIComponent(window.location.href);
+          } else if (AuthSystem.isAdmin()) {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "index.html";
+          }
+        } else {
+          loadDonations();
         }
-
-        loadDonations();
       });
     </script>
   </body>

@@ -79,3 +79,37 @@ function manualConfirm() {
     const val = document.getElementById('manualId').value.trim();
     if (val) confirmPayment(val);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadBtn = document.getElementById('btn-upload');
+    const fileInput = document.getElementById('qrFileInput');
+    if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', async (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (file) {
+                await scanQrFromFile(file);
+                event.target.value = '';
+            }
+        });
+    }
+});
+
+async function scanQrFromFile(file) {
+    updateStatus('Procesando imagen del QR...', 'info');
+    try {
+        const qrReader = new Html5Qrcode('fileReaderContainer');
+        const decodedText = await qrReader.scanFile(file, true);
+        await qrReader.clear();
+        lastDecoded = (decodedText || '').trim();
+        if (!lastDecoded) {
+            throw new Error('El QR no contiene información válida');
+        }
+        await loadPayment(lastDecoded);
+    } catch (error) {
+        console.error('No fue posible leer el archivo subido:', error);
+        updateStatus('No pudimos leer el código. Intenta con otra imagen clara.', 'error');
+        const btn = document.getElementById('btn-scan');
+        if (btn) btn.style.display = 'block';
+    }
+}

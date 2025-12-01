@@ -1,6 +1,13 @@
 async function initMyProjectsPage() {
-  if (!AuthSystem.isUser() && !AuthSystem.isAdmin()) {
-    window.location.href = "login.html?redirect=mis-proyectos.html";
+  // Solo usuarios normales pueden ver "Mis Proyectos"
+  if (!AuthSystem.isUser()) {
+    if (!AuthSystem.isLoggedIn()) {
+      window.location.href = "login.html?redirect=mis-proyectos.html";
+    } else if (AuthSystem.isAdmin()) {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "index.html";
+    }
     return;
   }
 
@@ -70,7 +77,7 @@ function displayMyProjects(projects) {
       <div class="project-content">
         <div class="status-display">
           <span class="badge ${getStatusBadgeClass(project.estado)}">${project.estado}</span>
-          <span class="badge ${getCampaignBadgeClass(project.campaña_estado)} campaign-status-badge">${project.campaña_estado}</span>
+          <span class="badge ${getCampaignBadgeClass(project.campaña_estado)} campaign-status-badge">${formatCampaignStatus(project.campaña_estado)}</span>
         </div>
         <h3 class="project-title">${project.titulo}</h3>
         <div class="project-meta">

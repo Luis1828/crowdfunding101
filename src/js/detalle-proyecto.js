@@ -175,19 +175,22 @@ function renderProjectDetail(p) {
       : user.id
     : null;
   const isCreator = user && creadorId === userId;
+  const isAdmin = AuthSystem.isAdmin();
   const canEdit =
-    user &&
-    (isCreator || AuthSystem.isAdmin()) &&
-    (p.estado === "Borrador" || p.estado === "Observado");
+    user && isCreator && (p.estado === "Borrador" || p.estado === "Observado");
   const canDonate =
-    p.estado === "Publicado" && p.campaña_estado === "En Progreso";
+    !isAdmin && p.estado === "Publicado" && p.campaña_estado === "En Progreso";
 
   // Mostrar estado del proyecto si no está publicado (solo para creador/admin)
   const estadoBadge =
     p.estado !== "Publicado" && (isCreator || AuthSystem.isAdmin())
       ? `<div class="status-badge" style="background:#ffc107;color:#000;padding:8px 16px;border-radius:4px;display:inline-block;margin-bottom:16px;">
          <strong>Estado: ${p.estado}</strong>
-         ${p.campaña_estado ? `<br><small>Campaña: ${p.campaña_estado}</small>` : ""}
+      ${
+        p.campaña_estado
+          ? `<br><small>Campaña: ${formatCampaignStatus(p.campaña_estado)}</small>`
+          : ""
+      }
        </div>`
       : "";
 
@@ -204,16 +207,36 @@ function renderProjectDetail(p) {
     </div>
     ${fechaLimite ? `<div style="margin-top:8px;color:var(--gray-color);"><strong>Fecha límite:</strong> ${fechaLimite} (${diasRestantes} días restantes)</div>` : ""}
     <div class="project-actions">
-      ${canDonate ? `<button class="btn btn-primary" id="donateBtn">Aportar</button>` : ""}
-      ${AuthSystem.isLoggedIn() ? `<button class="btn btn-outline" id="favoriteBtn">${isFavoriteProject ? "★ Quitar de Favoritos" : "☆ Agregar a Favoritos"}</button>` : ""}
-      <a class="btn btn-outline" href="explorar.html">Volver a explorar</a>
-      ${canEdit ? `<a href="editar-proyecto.html?id=${p.id}" class="btn btn-secondary">Editar Proyecto</a>` : ""}
+      ${
+        canDonate
+          ? `<button class="btn btn-primary" id="donateBtn">Aportar</button>`
+          : ""
+      }
+      ${
+        AuthSystem.isLoggedIn() && !isAdmin
+          ? `<button class="btn btn-outline" id="favoriteBtn">${
+              isFavoriteProject
+                ? "★ Quitar de Favoritos"
+                : "☆ Agregar a Favoritos"
+            }</button>`
+          : ""
+      }
+      ${
+        isAdmin
+          ? `<a class="btn btn-outline" href="admin.html">Volver a Admin</a>`
+          : `<a class="btn btn-outline" href="explorar.html">Volver a explorar</a>`
+      }
+      ${
+        canEdit
+          ? `<a href="editar-proyecto.html?id=${p.id}" class="btn btn-secondary">Editar Proyecto</a>`
+          : ""
+      }
     </div>
     <div class="status-display" style="margin-top:16px;">
       <span class="status-label">Estado del Proyecto:</span>
       <span class="badge ${getStatusBadgeClass(p.estado)}">${p.estado}</span>
       <span class="status-label" style="margin-left:16px;">Estado de la Campaña:</span>
-      <span class="badge ${getCampaignBadgeClass(p.campaña_estado)}">${p.campaña_estado}</span>
+      <span class="badge ${getCampaignBadgeClass(p.campaña_estado)}">${formatCampaignStatus(p.campaña_estado)}</span>
     </div>
     ${topDonorsHTML}
     ${donationsHTML}
@@ -263,7 +286,8 @@ async function showPaymentQR(paymentData, amount, name) {
       <img src="${paymentData.qrUrl}" alt="Código QR de pago" style="max-width:300px;margin:16px auto;display:block;border:2px solid #ddd;padding:8px;background:white;">
       <p style="color:#666;font-size:0.9rem;">Esperando confirmación del pago...</p>
       <div id="paymentStatus" style="margin-top:16px;"></div>
-      <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;">
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+        <button class="btn btn-outline" id="downloadQRBtn" style="margin-top:8px;">Descargar QR</button>
         <button class="btn btn-primary" id="simulatePaymentBtn" style="margin-top:8px;">Simular Confirmación (Prueba)</button>
         <button class="btn btn-outline" id="cancelPaymentBtn" style="margin-top:8px;">Cancelar</button>
       </div>
@@ -271,6 +295,13 @@ async function showPaymentQR(paymentData, amount, name) {
   `;
 
   formContainer.appendChild(qrContainer);
+
+  // Habilitar descarga rápida del QR
+  document
+    .getElementById("downloadQRBtn")
+    ?.addEventListener("click", () =>
+      downloadPaymentQR(paymentData.qrUrl, paymentId),
+    );
 
   // Polling para verificar estado del pago
   const paymentId = paymentData.paymentId;
@@ -387,6 +418,34 @@ async function showPaymentQR(paymentData, amount, name) {
   setTimeout(() => {
     clearInterval(pollInterval);
   }, 600000);
+}
+
+async function downloadPaymentQR(qrUrl, paymentId) {
+  if (!qrUrl) return;
+  try {
+    const response = await fetch(qrUrl, { mode: "cors" });
+    if (!response.ok) {
+      throw new Error("No se pudo descargar el código QR");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pago-${paymentId || "qr"}.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("No fue posible descargar el QR, abriendo en otra pestaña:", error);
+    const fallbackLink = document.createElement("a");
+    fallbackLink.href = qrUrl;
+    fallbackLink.target = "_blank";
+    fallbackLink.rel = "noopener";
+    document.body.appendChild(fallbackLink);
+    fallbackLink.click();
+    fallbackLink.remove();
+  }
 }
 
 function setupDonationForm() {

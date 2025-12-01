@@ -1,6 +1,13 @@
 async function initFavoritesPage() {
-  if (!AuthSystem.isUser() && !AuthSystem.isAdmin()) {
-    window.location.href = "login.html?redirect=favoritos.html";
+  // Solo usuarios normales pueden tener favoritos
+  if (!AuthSystem.isUser()) {
+    if (!AuthSystem.isLoggedIn()) {
+      window.location.href = "login.html?redirect=favoritos.html";
+    } else if (AuthSystem.isAdmin()) {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "index.html";
+    }
     return;
   }
 

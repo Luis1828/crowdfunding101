@@ -150,7 +150,7 @@ Las cuentas se precargan automáticamente al iniciar el backend.
 
 ### Estados de Campaña
 - **No Iniciada**: Aún no comenzó
-- **En Progreso**: Activa y recibiendo donaciones
+- **En Progreso** *(se muestra como “En Recaudación” en la interfaz)*: Activa y recibiendo donaciones
 - **En Pausa**: Temporalmente pausada
 - **Finalizada**: Completada
 
@@ -167,9 +167,13 @@ DB_PASSWORD=rootpassword
 DB_NAME=crowdfunding_db
 DB_PORT=3306
 PORT=3000
+PAYMENT_GATEWAY_PORT=3002
 JWT_SECRET=tu_secreto_super_seguro
 NODE_ENV=production
 FRONTEND_URL=http://localhost:3000
+# Opcional para túneles (localtunnel)
+APP_TUNNEL_SUBDOMAIN=
+GATEWAY_TUNNEL_SUBDOMAIN=
 ```
 
 ### Email (verificación real)
@@ -186,6 +190,20 @@ SMTP_PASS=doyjdtinqynbqjvl
 - Usa la contraseña de aplicación **sin espacios**.
 - Si prefieres otras credenciales, solo reemplázalas por tus valores.
 - Si no defines variables, la API usa automáticamente la cuenta anterior para no romper el flujo de verificación.
+
+### Acceso desde móviles (túnel opcional)
+
+Si necesitas compartir rápidamente el proyecto (puertos 3000 y 3002) con un celular, puedes levantar dos túneles seguros usando `localtunnel`:
+
+```bash
+cd src
+npm install    # solo la primera vez
+npm run tunnel
+```
+
+El script mostrará dos URLs públicas. Comparte la del puerto 3000 para la app web y, si quieres que los QR apunten al exterior, actualiza la variable `PUBLIC_URL` del servicio `payment-gateway` (o el `.env` equivalente) con la URL que se genere para el puerto 3002.
+
+Puedes opcionalmente fijar subdominios amigables configurando `APP_TUNNEL_SUBDOMAIN` y `GATEWAY_TUNNEL_SUBDOMAIN` en tu `.env`.
 
 ## Solución de Problemas
 

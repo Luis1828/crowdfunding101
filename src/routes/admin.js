@@ -27,8 +27,16 @@ router.get("/projects", async (req, res) => {
     const params = [];
 
     if (estado && estado !== "all") {
+      // Filtrar explícitamente por estado solicitado, excepto Borrador
+      if (estado === "Borrador") {
+        // No exponer proyectos en borrador en el panel de administración
+        return res.json([]);
+      }
       query += " AND p.estado = ?";
       params.push(estado);
+    } else {
+      // Por defecto, ocultar proyectos en Borrador
+      query += ' AND p.estado <> "Borrador"';
     }
 
     if (search) {
@@ -170,6 +178,32 @@ router.post("/projects/:id/reject", async (req, res) => {
   } catch (error) {
     console.error("Error rechazando proyecto:", error);
     res.status(500).json({ error: "Error al rechazar proyecto" });
+  }
+});
+
+// Marcar proyecto como Borrador (por admin)
+router.post("/projects/:id/draft", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [projects] = await pool.execute(
+      "SELECT estado FROM proyectos WHERE id = ?",
+      [id],
+    );
+
+    if (projects.length === 0) {
+      return res.status(404).json({ error: "Proyecto no encontrado" });
+    }
+
+    await pool.execute(
+      'UPDATE proyectos SET estado = "Borrador" WHERE id = ?',
+      [id],
+    );
+
+    res.json({ message: "Proyecto marcado como Borrador exitosamente" });
+  } catch (error) {
+    console.error("Error marcando proyecto como borrador:", error);
+    res.status(500).json({ error: "Error al marcar proyecto como borrador" });
   }
 });
 

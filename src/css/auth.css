@@ -1,7 +1,21 @@
 /* Auth page styles */
 .form-footer {
-  text-align: center;
   margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+  .form-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-footer .btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 .error-message {
   color: #dc3545;

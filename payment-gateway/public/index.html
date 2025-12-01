@@ -33,6 +33,17 @@
             <div id="reader"></div>
           </div>
 
+          <div class="mb-3">
+            <small class="text-muted d-block mb-2">¿Tienes el QR como imagen?</small>
+            <input type="file" id="qrFileInput" accept="image/*" style="display:none" />
+            <button type="button" id="btn-upload" class="btn btn-outline-secondary w-100">
+              Subir QR desde galería
+            </button>
+            <small class="text-muted d-block mt-2">
+              Selecciona una captura o archivo de tu QR para procesarlo sin usar la cámara.
+            </small>
+          </div>
+
           <div id="paymentInfo" class="mb-3"></div>
 
 
@@ -43,6 +54,7 @@
         </div>
       </div>
     </div>
+  <div id="fileReaderContainer" style="display:none;"></div>
   <script src="js/script.js"></script>
 </body>
 </html>

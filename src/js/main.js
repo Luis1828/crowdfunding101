@@ -700,6 +700,11 @@ function getCampaignBadgeClass(status) {
   return statusClasses[status] || "badge-gray";
 }
 
+function formatCampaignStatus(status) {
+  if (!status) return "";
+  return status === CAMPAIGN_STATUS.EN_PROGRESO ? "En Recaudación" : status;
+}
+
 function initMobileMenu() {
   const btn = document.getElementById("mobileMenuBtn");
   const nav = document.getElementById("navMenu");

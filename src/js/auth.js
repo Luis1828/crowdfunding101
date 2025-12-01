@@ -4,6 +4,9 @@ function initAuthPages() {
     const nameInput = register.querySelector("#name");
     const emailInput = register.querySelector("#email");
     const passwordInput = register.querySelector("#password");
+    const toggleRegisterPassword = document.getElementById(
+      "toggleRegisterPassword",
+    );
 
     if (nameInput) {
       nameInput.addEventListener("blur", () =>
@@ -32,6 +35,14 @@ function initAuthPages() {
         validateField("password", isValid, isValid ? "" : errors.join(". "));
       });
       passwordInput.addEventListener("input", () => hideError("password"));
+    }
+
+    if (passwordInput && toggleRegisterPassword) {
+      toggleRegisterPassword.addEventListener("change", () => {
+        passwordInput.type = toggleRegisterPassword.checked
+          ? "text"
+          : "password";
+      });
     }
 
     register.addEventListener("submit", async function (e) {
@@ -106,6 +117,7 @@ function initAuthPages() {
   if (login) {
     const emailInput = login.querySelector("#emailLogin");
     const passwordInput = login.querySelector("#passwordLogin");
+    const toggleLoginPassword = document.getElementById("toggleLoginPassword");
 
     if (emailInput) {
       emailInput.addEventListener("blur", () => {
@@ -124,6 +136,14 @@ function initAuthPages() {
         );
       });
       passwordInput.addEventListener("input", () => hideError("passwordLogin"));
+    }
+
+    if (passwordInput && toggleLoginPassword) {
+      toggleLoginPassword.addEventListener("change", () => {
+        passwordInput.type = toggleLoginPassword.checked
+          ? "text"
+          : "password";
+      });
     }
 
     login.addEventListener("submit", async function (e) {
