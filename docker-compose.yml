@@ -49,7 +49,7 @@ services:
 
   payment-gateway:
     build:
-      context: ../../payment-gateway-main/Gateway
+      context: ./payment-gateway
       dockerfile: Dockerfile
     container_name: payment_gateway
     environment:
